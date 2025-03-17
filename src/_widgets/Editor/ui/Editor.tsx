@@ -9,18 +9,13 @@ export const Editor = () => {
   const stageRef = useRef<StageType | null>(null);
   const transformerRef = useRef<TransformerType | null>(null);
   return (
-    <Stage
-      id={getStageId()}
-      ref={stageRef}
-      width={window.innerWidth}
-      height={window.innerHeight}
-    >
+    <Stage id={getStageId()} ref={stageRef} width={500} height={500}>
       <Layer>
         <Line
           points={[
             { x: 100, y: 100 },
-            { x: 200, y: 200 },
-            { x: 300, y: 300 },
+            { x: 250, y: 250 },
+            { x: 400, y: 400 },
           ]}
         />
         <Transformer

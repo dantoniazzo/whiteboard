@@ -32,7 +32,7 @@ export const Line = (props: LineProps) => {
         tension={0.5}
         bezier={true}
         lineCap="round"
-        stroke={"black"}
+        stroke="white"
         strokeWidth={1}
         points={formattedPoints}
         hitStrokeWidth={20}

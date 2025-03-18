@@ -97,8 +97,6 @@ export const Canvas = () => {
   const handlePointerDown = (
     e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
   ) => {
-    e.cancelBubble = true;
-    e.evt.stopPropagation();
     const isMouseOnStage = e.target._id === e.currentTarget._id;
     if (isMouseOnStage) {
       unSelectAllLines();
@@ -119,8 +117,6 @@ export const Canvas = () => {
   const handlePointerMove = (
     e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
   ) => {
-    e.cancelBubble = true;
-    e.evt.stopPropagation();
     const stage = getStage();
     if (stage) {
       if (e.evt.ctrlKey || e.evt.metaKey || getTool() === "pointer") {
@@ -153,11 +149,7 @@ export const Canvas = () => {
     }
   };
 
-  const handlePointerUp = (
-    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
-  ) => {
-    e.cancelBubble = true;
-    e.evt.stopPropagation();
+  const handlePointerUp = () => {
     const stage = getStage();
     if (stage) {
       if (getSelectionBox()) {

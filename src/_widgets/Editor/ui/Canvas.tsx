@@ -55,10 +55,6 @@ export const Canvas = () => {
     }
   };
 
-  const deleteLine = (id: string) => {
-    setLines((lines) => lines.filter((line) => line.id !== id));
-  };
-
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Backspace") {

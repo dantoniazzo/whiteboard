@@ -97,89 +97,102 @@ export const Editor = () => {
     };
   }, [handleKeyDown]);
 
+  const handlePointerDown = (
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
+  ) => {
+    const isMouseOnStage = e.target._id === e.currentTarget._id;
+    if (isMouseOnStage) {
+      unSelectAllLines();
+      if (e.evt.ctrlKey || e.evt.metaKey) {
+        const pointerPosition = getPointerPosition();
+        if (pointerPosition) {
+          createSelectionBox(pointerPosition);
+        }
+      } else {
+        const pointerPosition = getPointerPosition();
+        if (pointerPosition) {
+          createLine([pointerPosition, pointerPosition, pointerPosition]);
+        }
+      }
+    }
+  };
+
+  const handlePointerMove = (
+    e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
+  ) => {
+    const stage = getStage();
+    if (stage) {
+      if (e.evt.ctrlKey || e.evt.metaKey) {
+        const pointerPosition = getPointerPosition();
+        if (pointerPosition) {
+          updateSelectionBox(pointerPosition);
+        }
+      } else {
+        removeSelectionBoxes();
+        const newLineId = stage.getAttr(NEW_LINE_ATTR);
+        if (newLineId) {
+          const line = findLine(newLineId) as LineType;
+          if (line) {
+            const pointerPosition = getPointerPosition();
+            const points = line.points();
+            if (points && pointerPosition) {
+              line.points([
+                points[0],
+                points[1],
+                (pointerPosition.x + points[0]) / 2,
+                (pointerPosition.y + points[1]) / 2,
+                pointerPosition.x,
+                pointerPosition.y,
+              ]);
+              line.getLayer()?.batchDraw();
+            }
+          }
+        }
+      }
+    }
+  };
+
+  const handlePointerUp = () => {
+    const stage = getStage();
+    if (stage) {
+      if (getSelectionBox()) {
+        const intersectingLines = findLinesIntersectingWithBox();
+        if (intersectingLines) selectLines(intersectingLines);
+      }
+      removeSelectionBoxes();
+      const newLineId = stage.getAttr(NEW_LINE_ATTR);
+      if (newLineId) {
+        const line = findLine(newLineId) as LineType;
+        stage.setAttr(NEW_LINE_ATTR, null);
+        if (line) {
+          const points = line.points();
+          if (points) {
+            line.remove();
+            setLines((lines) => [
+              ...lines,
+              {
+                id: newLineId,
+                points: [
+                  { x: points[0], y: points[1] },
+                  { x: points[2], y: points[3] },
+                  { x: points[4], y: points[5] },
+                ],
+              },
+            ]);
+          }
+        }
+      }
+    }
+  };
+
   return (
     <Stage
-      onMouseDown={(e) => {
-        const isMouseOnStage = e.target._id === e.currentTarget._id;
-        if (isMouseOnStage) {
-          unSelectAllLines();
-          if (e.evt.ctrlKey || e.evt.metaKey) {
-            const pointerPosition = getPointerPosition();
-            if (pointerPosition) {
-              createSelectionBox(pointerPosition);
-            }
-          } else {
-            const pointerPosition = getPointerPosition();
-            if (pointerPosition) {
-              createLine([pointerPosition, pointerPosition, pointerPosition]);
-            }
-          }
-        }
-      }}
-      onMouseMove={(e) => {
-        const stage = getStage();
-        if (stage) {
-          if (e.evt.ctrlKey || e.evt.metaKey) {
-            const pointerPosition = getPointerPosition();
-            if (pointerPosition) {
-              updateSelectionBox(pointerPosition);
-            }
-          } else {
-            removeSelectionBoxes();
-            const newLineId = stage.getAttr(NEW_LINE_ATTR);
-            if (newLineId) {
-              const line = findLine(newLineId) as LineType;
-              if (line) {
-                const pointerPosition = getPointerPosition();
-                const points = line.points();
-                if (points && pointerPosition) {
-                  line.points([
-                    points[0],
-                    points[1],
-                    (pointerPosition.x + points[0]) / 2,
-                    (pointerPosition.y + points[1]) / 2,
-                    pointerPosition.x,
-                    pointerPosition.y,
-                  ]);
-                  line.getLayer()?.batchDraw();
-                }
-              }
-            }
-          }
-        }
-      }}
-      onMouseUp={() => {
-        const stage = getStage();
-        if (stage) {
-          if (getSelectionBox()) {
-            const intersectingLines = findLinesIntersectingWithBox();
-            if (intersectingLines) selectLines(intersectingLines);
-          }
-          removeSelectionBoxes();
-          const newLineId = stage.getAttr(NEW_LINE_ATTR);
-          if (newLineId) {
-            const line = findLine(newLineId) as LineType;
-            stage.setAttr(NEW_LINE_ATTR, null);
-            if (line) {
-              const points = line.points();
-              if (points) {
-                line.remove();
-                setLines((lines) => [
-                  ...lines,
-                  {
-                    id: newLineId,
-                    points: [
-                      { x: points[0], y: points[1] },
-                      { x: points[2], y: points[3] },
-                      { x: points[4], y: points[5] },
-                    ],
-                  },
-                ]);
-              }
-            }
-          }
-        }
-      }}
+      onTouchStart={handlePointerDown}
+      onMouseDown={handlePointerDown}
+      onTouchMove={handlePointerMove}
+      onMouseMove={handlePointerMove}
+      onTouchEnd={handlePointerUp}
+      onMouseUp={handlePointerUp}
       id={getStageId()}
       ref={stageRef}
       width={500}

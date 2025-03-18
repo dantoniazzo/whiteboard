@@ -28,6 +28,7 @@ export const Anchor = (props: CircleProps) => {
       }}
       name="circle"
       stroke={"blue"}
+      hitStrokeWidth={20}
       draggable
       {...props} // Pass all remaining props to Circle
     />

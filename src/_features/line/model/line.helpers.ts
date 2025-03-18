@@ -20,3 +20,8 @@ export const unSelectAllLines = () => {
     line.setAttr("stroke", "white");
   });
 };
+
+export const getSelectedLines = () => {
+  const allLines = getAllLines();
+  return allLines?.filter((line) => line.getAttr("selected"));
+};

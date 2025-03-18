@@ -1,11 +1,11 @@
 import Konva from "konva";
 import { Stage as StageType } from "konva/lib/Stage";
-import { Transformer as TransformerType } from "konva/lib/shapes/Transformer";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { Line as LineType } from "konva/lib/shapes/Line";
 import {
   formatPoints,
+  getSelectedLines,
   ILine,
   Line,
   LineConfig,
@@ -31,7 +31,6 @@ export const Editor = () => {
     },
   ]);
   const stageRef = useRef<StageType | null>(null);
-  const transformerRef = useRef<TransformerType | null>(null);
 
   const findLine = (id: string) => {
     const layer = getLayer();
@@ -59,6 +58,32 @@ export const Editor = () => {
   const deleteLine = (id: string) => {
     setLines((lines) => lines.filter((line) => line.id !== id));
   };
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Backspace") {
+        const tempLines = [...lines];
+        const selectedLines = getSelectedLines();
+        selectedLines?.forEach((line) => {
+          line.setAttr("selected", false);
+          line.setAttr("stroke", "white");
+          line.getLayer()?.batchDraw();
+          const index = lines.map((l) => l.id).indexOf(line.attrs.id);
+          tempLines.splice(index, 1);
+        });
+        setLines(tempLines);
+      }
+    },
+    [lines]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   return (
     <Stage
@@ -129,7 +154,7 @@ export const Editor = () => {
     >
       <Layer id={getLayerId()}>
         {lines.map((line, i) => {
-          return <Line key={`line-${i}`} points={line.points} />;
+          return <Line key={`line-${i}`} {...line} />;
         })}
       </Layer>
     </Stage>

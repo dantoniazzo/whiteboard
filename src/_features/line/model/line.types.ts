@@ -1,8 +1,9 @@
-// Define a Point type for better reusability
-type Point = { x: number; y: number };
+import { Position } from "_shared";
 
 // This tuple type requires at least 2 elements and at most 3 elements
-export type Points = [Point, Point] | [Point, Point, Point];
+export type Points = [Position, Position] | [Position, Position, Position];
 
-// Alternative approach using a rest parameter with a constraint
-// export type Points = [Point, Point, Point?];
+export interface ILine {
+  id: string;
+  points: Points;
+}

@@ -1,2 +1,2 @@
 export const getStageId = () => "stage";
-export const getTransformerId = () => "transformer";
+export const getLayerId = () => "layer";

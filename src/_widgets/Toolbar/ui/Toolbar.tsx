@@ -16,7 +16,7 @@ export const Toolbar = () => {
   return (
     <div
       id={getToolbarId()}
-      className="absolute left-1/2 bottom-5 flex bg-gray-800"
+      className="absolute left-1/2 -translate-x-1/2 bottom-5 flex bg-gray-800"
     >
       <button
         onClick={() => handleToolClick("pointer")}

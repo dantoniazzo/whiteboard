@@ -1,6 +1,7 @@
 import { getLayer } from "_features/layer";
 import { Points } from "./line.types";
 import { LINE_NAME } from "../lib";
+import { Line as LineType } from "konva/lib/shapes/Line";
 
 export const formatPoints = (points: Points) => {
   return points.flatMap((p) => [p.x, p.y]);
@@ -9,8 +10,15 @@ export const formatPoints = (points: Points) => {
 export const getAllLines = () => {
   const layer = getLayer();
   if (layer) {
-    return layer.find(`.${LINE_NAME}`);
+    return layer.find(`.${LINE_NAME}`) as LineType[];
   }
+};
+
+export const selectLines = (lines: LineType[]) => {
+  lines?.forEach((line) => {
+    line.setAttr("selected", true);
+    line.setAttr("stroke", "blue");
+  });
 };
 
 export const unSelectAllLines = () => {

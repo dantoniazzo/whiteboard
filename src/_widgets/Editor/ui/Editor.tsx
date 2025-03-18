@@ -10,6 +10,7 @@ import {
   Line,
   LineConfig,
   NEW_LINE_ATTR,
+  selectLines,
   unSelectAllLines,
 } from "_features/line";
 import { getLayerId, getStageId } from "../lib";
@@ -18,6 +19,13 @@ import { v4 as uuidv4 } from "uuid";
 import { getStage } from "_features/stage";
 import { getLayer } from "_features/layer";
 import { getPointerPosition } from "_features/pointer";
+import {
+  createSelectionBox,
+  findLinesIntersectingWithBox,
+  getSelectionBox,
+  removeSelectionBoxes,
+  updateSelectionBox,
+} from "_features/selection";
 
 export const Editor = () => {
   const [lines, setLines] = useState<ILine[]>([
@@ -62,16 +70,20 @@ export const Editor = () => {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Backspace") {
-        const tempLines = [...lines];
         const selectedLines = getSelectedLines();
+
+        const newLines = [...lines].filter(
+          (line) =>
+            !selectedLines?.find(
+              (selectedLine) => selectedLine.id() === line.id
+            )
+        );
         selectedLines?.forEach((line) => {
           line.setAttr("selected", false);
           line.setAttr("stroke", "white");
           line.getLayer()?.batchDraw();
-          const index = lines.map((l) => l.id).indexOf(line.attrs.id);
-          tempLines.splice(index, 1);
         });
-        setLines(tempLines);
+        setLines(newLines);
       }
     },
     [lines]
@@ -91,30 +103,46 @@ export const Editor = () => {
         const isMouseOnStage = e.target._id === e.currentTarget._id;
         if (isMouseOnStage) {
           unSelectAllLines();
-          const pointerPosition = getPointerPosition();
-          if (pointerPosition)
-            createLine([pointerPosition, pointerPosition, pointerPosition]);
+          if (e.evt.ctrlKey || e.evt.metaKey) {
+            const pointerPosition = getPointerPosition();
+            if (pointerPosition) {
+              createSelectionBox(pointerPosition);
+            }
+          } else {
+            const pointerPosition = getPointerPosition();
+            if (pointerPosition) {
+              createLine([pointerPosition, pointerPosition, pointerPosition]);
+            }
+          }
         }
       }}
-      onMouseMove={() => {
+      onMouseMove={(e) => {
         const stage = getStage();
         if (stage) {
-          const newLineId = stage.getAttr(NEW_LINE_ATTR);
-          if (newLineId) {
-            const line = findLine(newLineId) as LineType;
-            if (line) {
-              const pointerPosition = getPointerPosition();
-              const points = line.points();
-              if (points && pointerPosition) {
-                line.points([
-                  points[0],
-                  points[1],
-                  (pointerPosition.x + points[0]) / 2,
-                  (pointerPosition.y + points[1]) / 2,
-                  pointerPosition.x,
-                  pointerPosition.y,
-                ]);
-                line.getLayer()?.batchDraw();
+          if (e.evt.ctrlKey || e.evt.metaKey) {
+            const pointerPosition = getPointerPosition();
+            if (pointerPosition) {
+              updateSelectionBox(pointerPosition);
+            }
+          } else {
+            removeSelectionBoxes();
+            const newLineId = stage.getAttr(NEW_LINE_ATTR);
+            if (newLineId) {
+              const line = findLine(newLineId) as LineType;
+              if (line) {
+                const pointerPosition = getPointerPosition();
+                const points = line.points();
+                if (points && pointerPosition) {
+                  line.points([
+                    points[0],
+                    points[1],
+                    (pointerPosition.x + points[0]) / 2,
+                    (pointerPosition.y + points[1]) / 2,
+                    pointerPosition.x,
+                    pointerPosition.y,
+                  ]);
+                  line.getLayer()?.batchDraw();
+                }
               }
             }
           }
@@ -123,6 +151,11 @@ export const Editor = () => {
       onMouseUp={() => {
         const stage = getStage();
         if (stage) {
+          if (getSelectionBox()) {
+            const intersectingLines = findLinesIntersectingWithBox();
+            if (intersectingLines) selectLines(intersectingLines);
+          }
+          removeSelectionBoxes();
           const newLineId = stage.getAttr(NEW_LINE_ATTR);
           if (newLineId) {
             const line = findLine(newLineId) as LineType;

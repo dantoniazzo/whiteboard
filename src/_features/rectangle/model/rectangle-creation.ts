@@ -24,13 +24,8 @@ export const createRectangle = (config: RectConfig) => {
 
   // Store the initial position as custom attribute
   rect.setAttr('start-position', config.position);
-  rect.on('click', () => {
-    selectNode(rect);
-  });
-  rect.on('dragend', (e) => {
-    e.cancelBubble = true;
-  });
-  rect.on('touchend', () => {
+  rect.on('pointerup', (e) => {
+    console.log('e', e);
     selectNode(rect);
   });
   const layer = getLayer();

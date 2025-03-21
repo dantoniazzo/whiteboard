@@ -24,8 +24,8 @@ export const createRectangle = (config: RectConfig) => {
 
   // Store the initial position as custom attribute
   rect.setAttr('start-position', config.position);
-  rect.on('pointerup', (e) => {
-    console.log('e', e);
+  // We're using pointerup to handle touch events as well
+  rect.on('pointerup', () => {
     selectNode(rect);
   });
   const layer = getLayer();

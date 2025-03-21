@@ -1,59 +1,40 @@
 import Konva from 'konva';
 import { Stage as StageType } from 'konva/lib/Stage';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Stage, Layer } from 'react-konva';
-import { Line as LineType } from 'konva/lib/shapes/Line';
+import { Stage, Layer, Transformer } from 'react-konva';
 import {
-  formatPoints,
+  createLine,
+  drawLine,
+  finishDrawingLine,
   getSelectedLines,
   ILine,
   Line,
-  LineConfig,
-  NEW_LINE_ATTR,
   selectLines,
   unSelectAllLines,
 } from '_features/line';
 import { getEditorWrapperElement, getLayerId, getStageId } from '../lib';
-import { Points } from '_features/line';
-import { v4 as uuidv4 } from 'uuid';
-import { getStage } from '_features/stage';
-import { getLayer } from '_features/layer';
+import { getStage } from '_entities/stage';
 import { getPointerPosition } from '_features/pointer';
 import {
   createSelectionBox,
   findLinesIntersectingWithBox,
   getSelectionBox,
   removeSelectionBoxes,
+  unSelectAllNodes,
   updateSelectionBox,
 } from '_features/selection';
 import { getTool } from '_widgets/Toolbar';
+import { Tools } from '_widgets/Toolbar/model';
+import {
+  createRectangle,
+  finishDrawingRectangle,
+  updateRectangle,
+} from '_features/rectangle';
+import { getTransformerId } from '_entities/transformer';
 
 export const Canvas = () => {
   const [lines, setLines] = useState<ILine[]>([]);
   const stageRef = useRef<StageType | null>(null);
-
-  const findLine = (id: string) => {
-    const layer = getLayer();
-    if (layer) {
-      return layer.findOne(`#${id}`);
-    }
-  };
-
-  const createLine = (points: Points) => {
-    const id = uuidv4();
-    const newLine = new Konva.Line({
-      id,
-      points: formatPoints(points),
-      ...LineConfig,
-    });
-    const stage = getStage();
-    const layer = getLayer();
-    if (stage && layer) {
-      stage.setAttr(NEW_LINE_ATTR, id);
-      layer.add(newLine);
-      layer.batchDraw();
-    }
-  };
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -96,15 +77,21 @@ export const Canvas = () => {
     const isMouseOnStage = e.target._id === e.currentTarget._id;
     if (isMouseOnStage) {
       unSelectAllLines();
-      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === 'pointer') {
+      unSelectAllNodes();
+      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === Tools.POINTER) {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           createSelectionBox(pointerPosition);
         }
-      } else {
+      } else if (getTool() === Tools.LINE) {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           createLine([pointerPosition, pointerPosition, pointerPosition]);
+        }
+      } else if (getTool() === Tools.RECTANGLE) {
+        const pointerPosition = getPointerPosition();
+        if (pointerPosition) {
+          createRectangle({ position: pointerPosition });
         }
       }
     }
@@ -115,31 +102,17 @@ export const Canvas = () => {
   ) => {
     const stage = getStage();
     if (stage) {
-      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === 'pointer') {
+      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === Tools.POINTER) {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           updateSelectionBox(pointerPosition);
         }
-      } else {
-        removeSelectionBoxes();
-        const newLineId = stage.getAttr(NEW_LINE_ATTR);
-        if (newLineId) {
-          const line = findLine(newLineId) as LineType;
-          if (line) {
-            const pointerPosition = getPointerPosition();
-            const points = line.points();
-            if (points && pointerPosition) {
-              line.points([
-                points[0],
-                points[1],
-                (pointerPosition.x + points[0]) / 2,
-                (pointerPosition.y + points[1]) / 2,
-                pointerPosition.x,
-                pointerPosition.y,
-              ]);
-              line.getLayer()?.batchDraw();
-            }
-          }
+      } else if (getTool() === Tools.LINE) {
+        drawLine();
+      } else if (getTool() === Tools.RECTANGLE) {
+        const pointerPosition = getPointerPosition();
+        if (pointerPosition) {
+          updateRectangle(pointerPosition);
         }
       }
     }
@@ -153,27 +126,10 @@ export const Canvas = () => {
         if (intersectingLines) selectLines(intersectingLines);
       }
       removeSelectionBoxes();
-      const newLineId = stage.getAttr(NEW_LINE_ATTR);
-      if (newLineId) {
-        const line = findLine(newLineId) as LineType;
-        stage.setAttr(NEW_LINE_ATTR, null);
-        if (line) {
-          const points = line.points();
-          if (points) {
-            line.remove();
-            setLines((lines) => [
-              ...lines,
-              {
-                id: newLineId,
-                points: [
-                  { x: points[0], y: points[1] },
-                  { x: points[2], y: points[3] },
-                  { x: points[4], y: points[5] },
-                ],
-              },
-            ]);
-          }
-        }
+      if (getTool() === Tools.LINE) {
+        finishDrawingLine(lines, setLines);
+      } else if (getTool() === Tools.RECTANGLE) {
+        finishDrawingRectangle();
       }
     }
   };
@@ -193,6 +149,7 @@ export const Canvas = () => {
         {lines.map((line, i) => {
           return <Line key={`line-${i}`} {...line} />;
         })}
+        <Transformer keepRatio={false} id={getTransformerId()} />
       </Layer>
     </Stage>
   );

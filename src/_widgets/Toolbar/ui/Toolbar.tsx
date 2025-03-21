@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
-import { getToolbarElement, getToolbarId } from '../lib/toolbar.element';
+import React, { useEffect, useState } from 'react';
+import {
+  getToolbarElement,
+  getToolbarId,
+  TOOL_ATTR_NAME,
+} from '../lib/toolbar.element';
 import { Tools, toolsConfig } from '../model/tools.config';
 
 interface ToolbarButtonProps {
@@ -24,15 +28,22 @@ export const ToolbarButton = (props: ToolbarButtonProps) => {
 };
 
 export const Toolbar = () => {
-  const [currentTool, setCurrentTool] = useState<Tools>(Tools.LINE);
+  const [currentTool, setCurrentTool] = useState<Tools>(Tools.POINTER);
 
   const handleToolClick = (tool: Tools) => {
     const toolbar = getToolbarElement();
     if (toolbar) {
-      toolbar.setAttribute('data-tool', tool);
+      toolbar.setAttribute(TOOL_ATTR_NAME, tool);
       setCurrentTool(tool);
     }
   };
+
+  useEffect(() => {
+    const toolbar = getToolbarElement();
+    if (toolbar) {
+      toolbar.setAttribute(TOOL_ATTR_NAME, currentTool);
+    }
+  }, []);
 
   return (
     <div

@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { Position } from '_shared';
 import { selectionBoxConfig } from './selection-box.config';
-import { getStage } from '_features/stage';
+import { getStage } from '_entities/stage';
 import { Node } from 'konva/lib/Node';
 import { getAllLines } from '_features/line';
 import {
@@ -24,7 +24,7 @@ export const createSelectionBox = (position: Position) => {
 };
 
 export const updateSelectionBox = (position: Position) => {
-  updateRectangle(SELECTION_BOX_ID, position);
+  updateRectangle(position, SELECTION_BOX_ID);
 };
 
 export const getAllSelectionBoxes = () => {

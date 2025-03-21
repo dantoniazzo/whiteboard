@@ -24,7 +24,7 @@ export const toolsConfig: { [key in Tools]: ToolConfig } = {
   },
   [Tools.RECTANGLE]: {
     icon: <Square />,
-    enabled: false,
+    enabled: true,
   },
   [Tools.TEXT]: {
     icon: <Type />,

@@ -1,9 +1,11 @@
 import Konva from 'konva';
 import { Position } from '_shared';
 import { RectConfig } from 'konva/lib/shapes/Rect';
-import { getLayer } from '_features/layer';
+import { getLayer } from '_entities/layer';
 import { DRAWN_RECTANGLE_ID } from '../lib';
-import { drawnRectangleConfig } from './rectangle-creation.config';
+import { drawnRectangleConfig } from './rectangle.config';
+import { v4 as uuidv4 } from 'uuid';
+import { selectNode } from '_features/selection';
 
 export const getDrawnRectangleBox = (id: string) => {
   const layer = getLayer();
@@ -17,20 +19,23 @@ export const createRectangle = (config: RectConfig) => {
     height: 0,
     ...drawnRectangleConfig,
     ...config,
+    draggable: true,
   });
 
   // Store the initial position as custom attribute
   rect.setAttr('start-position', config.position);
+  rect.on('click', () => {
+    selectNode(rect);
+  });
   const layer = getLayer();
   layer?.add(rect);
 };
 
-export const updateRectangle = (id: string, position: Position) => {
-  const boundingBox = getDrawnRectangleBox(id);
-  if (boundingBox) {
+export const updateRectangle = (position: Position, id?: string) => {
+  const rect = getDrawnRectangleBox(id || DRAWN_RECTANGLE_ID);
+  if (rect) {
     // Get the original starting position
-    const startPosition = boundingBox.getAttr('start-position') as Position;
-    console.log('Start positon: ', startPosition);
+    const startPosition = rect.getAttr('start-position') as Position;
     // Calculate width, height, and new position
     let newX = startPosition.x;
     let newY = startPosition.y;
@@ -46,7 +51,15 @@ export const updateRectangle = (id: string, position: Position) => {
     }
 
     // Update the bounding box
-    boundingBox.position({ x: newX, y: newY });
-    boundingBox.size({ width, height });
+    rect.position({ x: newX, y: newY });
+    rect.size({ width, height });
+  }
+};
+
+export const finishDrawingRectangle = (id?: string) => {
+  const rect = getDrawnRectangleBox(id || DRAWN_RECTANGLE_ID);
+  if (rect) {
+    rect.id(uuidv4());
+    rect.setAttr('start-position', null);
   }
 };

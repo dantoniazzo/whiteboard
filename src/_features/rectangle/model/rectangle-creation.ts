@@ -27,6 +27,9 @@ export const createRectangle = (config: RectConfig) => {
   rect.on('click', () => {
     selectNode(rect);
   });
+  rect.on('touchend', () => {
+    selectNode(rect);
+  });
   const layer = getLayer();
   layer?.add(rect);
 };

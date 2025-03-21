@@ -27,6 +27,9 @@ export const createRectangle = (config: RectConfig) => {
   rect.on('click', () => {
     selectNode(rect);
   });
+  rect.on('dragend', (e) => {
+    e.cancelBubble = true;
+  });
   rect.on('touchend', () => {
     selectNode(rect);
   });

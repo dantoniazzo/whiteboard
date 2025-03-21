@@ -1,8 +1,8 @@
-import Konva from "konva";
-import { Stage as StageType } from "konva/lib/Stage";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Stage, Layer } from "react-konva";
-import { Line as LineType } from "konva/lib/shapes/Line";
+import Konva from 'konva';
+import { Stage as StageType } from 'konva/lib/Stage';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Stage, Layer } from 'react-konva';
+import { Line as LineType } from 'konva/lib/shapes/Line';
 import {
   formatPoints,
   getSelectedLines,
@@ -12,21 +12,21 @@ import {
   NEW_LINE_ATTR,
   selectLines,
   unSelectAllLines,
-} from "_features/line";
-import { getEditorWrapperElement, getLayerId, getStageId } from "../lib";
-import { Points } from "_features/line";
-import { v4 as uuidv4 } from "uuid";
-import { getStage } from "_features/stage";
-import { getLayer } from "_features/layer";
-import { getPointerPosition } from "_features/pointer";
+} from '_features/line';
+import { getEditorWrapperElement, getLayerId, getStageId } from '../lib';
+import { Points } from '_features/line';
+import { v4 as uuidv4 } from 'uuid';
+import { getStage } from '_features/stage';
+import { getLayer } from '_features/layer';
+import { getPointerPosition } from '_features/pointer';
 import {
   createSelectionBox,
   findLinesIntersectingWithBox,
   getSelectionBox,
   removeSelectionBoxes,
   updateSelectionBox,
-} from "_features/selection";
-import { getTool } from "_widgets/Toolbar";
+} from '_features/selection';
+import { getTool } from '_widgets/Toolbar';
 
 export const Canvas = () => {
   const [lines, setLines] = useState<ILine[]>([]);
@@ -57,7 +57,7 @@ export const Canvas = () => {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Backspace") {
+      if (e.key === 'Backspace' || e.key === 'Delete') {
         const selectedLines = getSelectedLines();
 
         const newLines = [...lines].filter(
@@ -67,8 +67,8 @@ export const Canvas = () => {
             )
         );
         selectedLines?.forEach((line) => {
-          line.setAttr("selected", false);
-          line.setAttr("stroke", "white");
+          line.setAttr('selected', false);
+          line.setAttr('stroke', 'white');
           line.getLayer()?.batchDraw();
         });
         setLines(newLines);
@@ -83,10 +83,10 @@ export const Canvas = () => {
       width: editorWrapperElement?.clientWidth || 0,
       height: editorWrapperElement?.clientHeight || 0,
     });
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
 
@@ -96,7 +96,7 @@ export const Canvas = () => {
     const isMouseOnStage = e.target._id === e.currentTarget._id;
     if (isMouseOnStage) {
       unSelectAllLines();
-      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === "pointer") {
+      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === 'pointer') {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           createSelectionBox(pointerPosition);
@@ -115,7 +115,7 @@ export const Canvas = () => {
   ) => {
     const stage = getStage();
     if (stage) {
-      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === "pointer") {
+      if (e.evt.ctrlKey || e.evt.metaKey || getTool() === 'pointer') {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           updateSelectionBox(pointerPosition);

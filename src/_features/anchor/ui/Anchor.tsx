@@ -1,4 +1,4 @@
-import { Circle } from "react-konva";
+import { Circle } from 'react-konva';
 
 // Use React's utility type to extract props from Circle component
 type CircleProps = React.ComponentProps<typeof Circle>;
@@ -9,7 +9,7 @@ export const Anchor = (props: CircleProps) => {
       x={props.x}
       y={props.y}
       radius={5}
-      fill={"red"}
+      fill={'#171717'}
       onPointerEnter={(e) => {
         e.target.to({
           scaleX: 1.5,
@@ -27,7 +27,7 @@ export const Anchor = (props: CircleProps) => {
         e.target.getLayer()?.batchDraw();
       }}
       name="circle"
-      stroke={"blue"}
+      stroke={'#737373'}
       hitStrokeWidth={20}
       draggable
       {...props} // Pass all remaining props to Circle

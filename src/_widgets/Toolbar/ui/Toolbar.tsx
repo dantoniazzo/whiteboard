@@ -5,6 +5,7 @@ import {
   TOOL_ATTR_NAME,
 } from '../lib/toolbar.element';
 import { Tools, toolsConfig } from '../model/tools.config';
+import { setDataAttribute } from '_shared';
 
 interface ToolbarButtonProps {
   onClick: () => void;
@@ -33,7 +34,7 @@ export const Toolbar = () => {
   const handleToolClick = (tool: Tools) => {
     const toolbar = getToolbarElement();
     if (toolbar) {
-      toolbar.setAttribute(TOOL_ATTR_NAME, tool);
+      setDataAttribute(toolbar, TOOL_ATTR_NAME, tool);
       setCurrentTool(tool);
     }
   };
@@ -41,7 +42,7 @@ export const Toolbar = () => {
   useEffect(() => {
     const toolbar = getToolbarElement();
     if (toolbar) {
-      toolbar.setAttribute(TOOL_ATTR_NAME, currentTool);
+      setDataAttribute(toolbar, TOOL_ATTR_NAME, currentTool);
     }
   }, []);
 

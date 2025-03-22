@@ -18,7 +18,7 @@ export const closeLeftRail = () => {
   }
 };
 
-export const toggleLeftRail = () => {
+export const toggleLeftRail = (callback: (isOpen: boolean) => void) => {
   const leftRail = getLeftRailElement();
   if (leftRail) {
     const isOpen =
@@ -28,5 +28,6 @@ export const toggleLeftRail = () => {
       LEFT_RAIL_OPEN_ATTR_NAME,
       isOpen ? 'false' : 'true'
     );
+    callback(!isOpen);
   }
 };

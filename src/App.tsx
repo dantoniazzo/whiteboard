@@ -4,8 +4,8 @@ import { LeftRail } from '_widgets/LeftRail';
 function App() {
   return (
     <div className="w-screen h-screen bg-gray-900">
-      <LeftRail />
       <Editor />
+      <LeftRail />
     </div>
   );
 }

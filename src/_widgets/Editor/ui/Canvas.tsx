@@ -149,7 +149,13 @@ export const Canvas = () => {
         {lines.map((line, i) => {
           return <Line key={`line-${i}`} {...line} />;
         })}
-        <Transformer keepRatio={false} id={getTransformerId()} />
+        <Transformer
+          anchorCornerRadius={4}
+          borderStroke="black"
+          anchorStroke="black"
+          keepRatio={false}
+          id={getTransformerId()}
+        />
       </Layer>
     </Stage>
   );

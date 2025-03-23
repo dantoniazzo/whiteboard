@@ -5,7 +5,7 @@ export const initialData: TreeNode[] = [
     id: '1',
     name: 'File',
     isExpanded: true,
-    children: [
+    /*  children: [
       {
         id: '2',
         name: 'Documents',
@@ -24,6 +24,6 @@ export const initialData: TreeNode[] = [
         ],
       },
       { id: '8', name: 'config.json' },
-    ],
+    ], */
   },
 ];

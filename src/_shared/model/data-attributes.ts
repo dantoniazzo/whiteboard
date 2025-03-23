@@ -17,3 +17,29 @@ export const setDataAttribute = (
 export const removeDataAttribute = (element: HTMLElement, attr: string) => {
   element.removeAttribute(constructDataAttribute(attr));
 };
+
+export const observeMutation = (
+  el: Element,
+  callback: (mutationList: MutationRecord[], observer: MutationObserver) => void
+) => {
+  const observer = new MutationObserver(callback);
+  observer.observe(el, { attributes: true, attributeOldValue: true });
+  return observer;
+};
+
+export const observeAttribute = (
+  el: Element,
+  attr: string,
+  callback: (oldValue: string | null) => void
+) => {
+  return observeMutation(el, (mutationList) => {
+    for (const mutation of mutationList) {
+      if (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === constructDataAttribute(attr)
+      ) {
+        callback(mutation.oldValue);
+      }
+    }
+  });
+};

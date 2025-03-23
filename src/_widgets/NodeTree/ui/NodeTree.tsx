@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { TreeNode } from '../model/node-tree.types';
 import {
   cloneNode,
+  getNewFileType,
   insertNode,
   removeNode,
   useNodeTreeMutation,
 } from '../model/node-tree.mutation';
-import { getNodeTreeElementId } from '../lib';
+import { getNodeTreeElementId, NodeTreeAttributes } from '../lib';
+import { observeAttribute } from '_shared';
+import { v4 as uuidv4 } from 'uuid';
 
 export const NodeTree = () => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
@@ -16,6 +19,34 @@ export const NodeTree = () => {
     'before' | 'after' | 'inside' | null
   >(null);
   const { treeData: data, setTreeData: onUpdate } = useNodeTreeMutation();
+  const fileTreeObserver = useRef<MutationObserver | null>(null);
+
+  const fileTreeRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (!node) {
+        fileTreeObserver.current?.disconnect();
+      } else {
+        fileTreeObserver.current = observeAttribute(
+          node,
+          NodeTreeAttributes.NEW_FILE,
+          () => {
+            const newFileType = getNewFileType();
+            if (newFileType) {
+              onUpdate(
+                insertNode(
+                  data,
+                  '1',
+                  { id: uuidv4(), name: newFileType },
+                  'inside'
+                )
+              );
+            }
+          }
+        );
+      }
+    },
+    [data, onUpdate]
+  );
 
   const handleDragStart = (e: React.DragEvent, nodeId: string) => {
     e.stopPropagation();
@@ -225,7 +256,11 @@ export const NodeTree = () => {
   };
 
   return (
-    <div id={getNodeTreeElementId()} className="font-mono text-sm">
+    <div
+      ref={fileTreeRef}
+      id={getNodeTreeElementId()}
+      className="font-mono text-sm"
+    >
       {data.map((node) => renderNode(node))}
     </div>
   );

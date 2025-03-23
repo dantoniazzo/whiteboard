@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { TreeNode } from '../model/node-tree.types';
-import { useNodeTreeMutation } from '../model/node-tree.mutation';
+import {
+  cloneNode,
+  insertNode,
+  removeNode,
+  useNodeTreeMutation,
+} from '../model/node-tree.mutation';
+import { getNodeTreeElementId } from '../lib';
 
 export const NodeTree = () => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
@@ -114,62 +120,6 @@ export const NodeTree = () => {
     return [null, null];
   };
 
-  const cloneNode = (node: TreeNode): TreeNode => ({
-    ...node,
-    children: node.children ? node.children.map(cloneNode) : undefined,
-  });
-
-  const removeNode = (nodes: TreeNode[], id: string): TreeNode[] => {
-    return nodes.filter((node) => {
-      if (node.id === id) return false;
-      if (node.children) {
-        node.children = removeNode(node.children, id);
-      }
-      return true;
-    });
-  };
-
-  const insertNode = (
-    nodes: TreeNode[],
-    targetId: string,
-    nodeToInsert: TreeNode,
-    position: 'before' | 'after' | 'inside'
-  ): TreeNode[] => {
-    const result: TreeNode[] = [];
-
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-
-      if (node.id === targetId) {
-        if (position === 'before') {
-          result.push(nodeToInsert, node);
-        } else if (position === 'after') {
-          result.push(node, nodeToInsert);
-        } else {
-          // inside
-          result.push({
-            ...node,
-            children: [...(node.children || []), nodeToInsert],
-            isExpanded: true,
-          });
-        }
-      } else {
-        const newNode = { ...node };
-        if (node.children) {
-          newNode.children = insertNode(
-            node.children,
-            targetId,
-            nodeToInsert,
-            position
-          );
-        }
-        result.push(newNode);
-      }
-    }
-
-    return result;
-  };
-
   const handleDrop = (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -275,7 +225,7 @@ export const NodeTree = () => {
   };
 
   return (
-    <div className="font-mono text-sm">
+    <div id={getNodeTreeElementId()} className="font-mono text-sm">
       {data.map((node) => renderNode(node))}
     </div>
   );

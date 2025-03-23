@@ -2,6 +2,11 @@ import { TreeNode } from '_widgets/NodeTree';
 import { useState } from 'react';
 import { initialData } from '../lib';
 
+export const cloneNode = (node: TreeNode): TreeNode => ({
+  ...node,
+  children: node.children ? node.children.map(cloneNode) : undefined,
+});
+
 export const removeNode = (nodes: TreeNode[], id: string): TreeNode[] => {
   return nodes.filter((node) => {
     if (node.id === id) return false;

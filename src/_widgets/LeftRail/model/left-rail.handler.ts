@@ -1,20 +1,18 @@
 import { getDataAttribute, setDataAttribute } from '_shared';
-import {
-  getLeftRailElement,
-  LEFT_RAIL_OPEN_ATTR_NAME,
-} from '../lib/left-rail.element';
+import { getLeftRailElement } from '../lib/left-rail.element';
+import { LeftRailAttributes } from '../lib';
 
 export const openLeftRail = () => {
   const leftRail = getLeftRailElement();
   if (leftRail) {
-    setDataAttribute(leftRail, LEFT_RAIL_OPEN_ATTR_NAME, 'true');
+    setDataAttribute(leftRail, LeftRailAttributes.OPEN, 'true');
   }
 };
 
 export const closeLeftRail = () => {
   const leftRail = getLeftRailElement();
   if (leftRail) {
-    setDataAttribute(leftRail, LEFT_RAIL_OPEN_ATTR_NAME, 'false');
+    setDataAttribute(leftRail, LeftRailAttributes.OPEN, 'false');
   }
 };
 
@@ -22,10 +20,10 @@ export const toggleLeftRail = (callback: (isOpen: boolean) => void) => {
   const leftRail = getLeftRailElement();
   if (leftRail) {
     const isOpen =
-      getDataAttribute(leftRail, LEFT_RAIL_OPEN_ATTR_NAME) === 'true';
+      getDataAttribute(leftRail, LeftRailAttributes.OPEN) === 'true';
     setDataAttribute(
       leftRail,
-      LEFT_RAIL_OPEN_ATTR_NAME,
+      LeftRailAttributes.OPEN,
       isOpen ? 'false' : 'true'
     );
     callback(!isOpen);

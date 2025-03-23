@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { TreeNode } from '../model/node-tree.types';
+import { useNodeTreeMutation } from '../model/node-tree.mutation';
 
-interface NodeTreeProps {
-  data: TreeNode[];
-  onUpdate: (nodes: TreeNode[]) => void;
-}
-
-export const NodeTree: React.FC<NodeTreeProps> = ({ data, onUpdate }) => {
+export const NodeTree = () => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
   const [dropPosition, setDropPosition] = useState<
     'before' | 'after' | 'inside' | null
   >(null);
+  const { treeData: data, setTreeData: onUpdate } = useNodeTreeMutation();
 
   const handleDragStart = (e: React.DragEvent, nodeId: string) => {
     e.stopPropagation();

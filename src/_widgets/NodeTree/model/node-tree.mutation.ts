@@ -1,6 +1,25 @@
 import { TreeNode } from '_widgets/NodeTree';
 import { useState } from 'react';
-import { initialData } from '../lib';
+import {
+  getNodeTreeAttribute,
+  initialData,
+  NodeTreeAttributes,
+  removeNodeTreeAttribute,
+  setNodeTreeAttribute,
+} from '../lib';
+import { NodeTypes } from '_entities/node';
+
+export const getNewFileType = () => {
+  return getNodeTreeAttribute(NodeTreeAttributes.NEW_FILE);
+};
+
+export const setNewFileType = (type: NodeTypes) => {
+  setNodeTreeAttribute(NodeTreeAttributes.NEW_FILE, type);
+};
+
+export const removeNewFileType = () => {
+  removeNodeTreeAttribute(NodeTreeAttributes.NEW_FILE);
+};
 
 export const cloneNode = (node: TreeNode): TreeNode => ({
   ...node,

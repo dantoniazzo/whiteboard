@@ -6,7 +6,7 @@ import { NodeTree, TreeNode } from '_widgets/NodeTree';
 const initialData: TreeNode[] = [
   {
     id: '1',
-    name: 'Root',
+    name: 'File',
     isExpanded: true,
     children: [
       {

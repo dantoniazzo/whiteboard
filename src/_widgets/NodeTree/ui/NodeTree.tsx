@@ -259,7 +259,9 @@ export const NodeTree: React.FC<NodeTreeProps> = ({ data, onUpdate }) => {
                 <ChevronRight className="w-4 h-4 stroke-white" />
               ))}
           </button>
-          <span className="flex-1 px-2 text-white">{node.name}</span>
+          <span className="flex-1 px-2 text-white overflow-hidden whitespace-nowrap text-ellipsis">
+            {node.name}
+          </span>
           <div className="opacity-0 hover:opacity-100 transition-opacity">
             <button className="p-1 hover:bg-gray-200 rounded">
               <MoreHorizontal className="w-4 h-4" />

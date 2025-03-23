@@ -31,6 +31,8 @@ import {
   updateRectangle,
 } from '_features/rectangle';
 import { getTransformerId } from '_entities/transformer';
+import { setNewFileType } from '_widgets/NodeTree';
+import { NodeTypes } from '_entities/node';
 
 export const Canvas = () => {
   const [lines, setLines] = useState<ILine[]>([]);
@@ -87,11 +89,13 @@ export const Canvas = () => {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           createLine([pointerPosition, pointerPosition, pointerPosition]);
+          setNewFileType(NodeTypes.LINE);
         }
       } else if (getTool() === Tools.RECTANGLE) {
         const pointerPosition = getPointerPosition();
         if (pointerPosition) {
           createRectangle({ position: pointerPosition });
+          setNewFileType(NodeTypes.RECTANGLE);
         }
       }
     }

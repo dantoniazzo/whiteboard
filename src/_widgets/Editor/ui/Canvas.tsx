@@ -157,6 +157,7 @@ export const Canvas = () => {
           anchorCornerRadius={4}
           borderStroke="black"
           anchorStroke="black"
+          anchorStrokeWidth={2}
           keepRatio={false}
           id={getTransformerId()}
         />

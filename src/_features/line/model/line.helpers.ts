@@ -2,6 +2,7 @@ import { getLayer } from '_entities/layer';
 import { Points } from './line.types';
 import { LINE_NAME } from '../lib';
 import { Line as LineType } from 'konva/lib/shapes/Line';
+import { LineConfig } from './line.config';
 
 export const formatPoints = (points: Points) => {
   return points.flatMap((p) => [p.x, p.y]);
@@ -25,7 +26,7 @@ export const unSelectAllLines = () => {
   const allLines = getAllLines();
   allLines?.forEach((line) => {
     line.setAttr('selected', false);
-    line.setAttr('stroke', 'white');
+    line.setAttr('stroke', LineConfig.stroke);
   });
 };
 

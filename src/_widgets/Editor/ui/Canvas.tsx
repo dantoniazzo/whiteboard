@@ -1,20 +1,17 @@
-import Konva from 'konva';
-import { Stage as StageType } from 'konva/lib/Stage';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Stage, Layer, Transformer } from 'react-konva';
+import Konva from "konva";
+import { Stage as StageType } from "konva/lib/Stage";
+import { useEffect, useRef } from "react";
+import { Stage, Layer, Transformer } from "react-konva";
 import {
   createLine,
   drawLine,
   finishDrawingLine,
-  getSelectedLines,
-  ILine,
-  Line,
   selectLines,
   unSelectAllLines,
-} from '_features/line';
-import { getEditorWrapperElement, getLayerId, getStageId } from '../lib';
-import { getStage } from '_entities/stage';
-import { getPointerPosition } from '_features/pointer';
+} from "_features/line";
+import { getEditorWrapperElement, getLayerId, getStageId } from "../lib";
+import { getStage } from "_entities/stage";
+import { getPointerPosition } from "_features/pointer";
 import {
   createSelectionBox,
   findLinesIntersectingWithBox,
@@ -22,43 +19,20 @@ import {
   removeSelectionBoxes,
   unSelectAllNodes,
   updateSelectionBox,
-} from '_features/selection';
-import { getTool } from '_widgets/Toolbar';
-import { Tools } from '_widgets/Toolbar/model';
+} from "_features/selection";
+import { getTool } from "_widgets/Toolbar";
+import { Tools } from "_widgets/Toolbar/model";
 import {
   createRectangle,
   finishDrawingRectangle,
   updateRectangle,
-} from '_features/rectangle';
-import { getTransformerId } from '_entities/transformer';
-import { setNewFileType } from '_widgets/NodeTree';
-import { NodeTypes } from '_entities/node';
+} from "_features/rectangle";
+import { getTransformerId } from "_entities/transformer";
+import { setNewFileType } from "_widgets/NodeTree";
+import { NodeTypes } from "_entities/node";
 
 export const Canvas = () => {
-  const [lines, setLines] = useState<ILine[]>([]);
   const stageRef = useRef<StageType | null>(null);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Backspace' || e.key === 'Delete') {
-        const selectedLines = getSelectedLines();
-
-        const newLines = [...lines].filter(
-          (line) =>
-            !selectedLines?.find(
-              (selectedLine) => selectedLine.id() === line.id
-            )
-        );
-        selectedLines?.forEach((line) => {
-          line.setAttr('selected', false);
-          line.setAttr('stroke', 'white');
-          line.getLayer()?.batchDraw();
-        });
-        setLines(newLines);
-      }
-    },
-    [lines]
-  );
 
   useEffect(() => {
     const editorWrapperElement = getEditorWrapperElement();
@@ -66,12 +40,7 @@ export const Canvas = () => {
       width: editorWrapperElement?.clientWidth || 0,
       height: editorWrapperElement?.clientHeight || 0,
     });
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
+  }, []);
 
   const handlePointerDown = (
     e: Konva.KonvaEventObject<MouseEvent | TouchEvent>
@@ -131,7 +100,7 @@ export const Canvas = () => {
       }
       removeSelectionBoxes();
       if (getTool() === Tools.LINE) {
-        finishDrawingLine(lines, setLines);
+        finishDrawingLine();
       } else if (getTool() === Tools.RECTANGLE) {
         finishDrawingRectangle();
       }
@@ -147,9 +116,6 @@ export const Canvas = () => {
       ref={stageRef}
     >
       <Layer id={getLayerId()}>
-        {lines.map((line, i) => {
-          return <Line key={`line-${i}`} {...line} />;
-        })}
         <Transformer
           anchorCornerRadius={4}
           borderStroke="black"

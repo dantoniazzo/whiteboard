@@ -140,12 +140,9 @@ export const Canvas = () => {
 
   return (
     <Stage
-      onTouchStart={handlePointerDown}
-      onMouseDown={handlePointerDown}
-      onTouchMove={handlePointerMove}
-      onMouseMove={handlePointerMove}
-      onTouchEnd={handlePointerUp}
-      onMouseUp={handlePointerUp}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
       id={getStageId()}
       ref={stageRef}
     >
